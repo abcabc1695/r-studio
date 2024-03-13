@@ -2,8 +2,11 @@ library(dpylr)
 group_by(company)
 data$date=as.POSIXct(data$date, format="%Y%m%d")
 mutate(maxprice=close)#在旁邊建立等長向量
-findmax<-function(a)
+findmax<-function(a)#a是位置
 {
+data%>%
+m=max(high==(date>(date[a]-365)&&date<date[a]))#如果date可以直接做減法就可以直接使用
+return(m)
 }
 for i in c(1:length(date$close))
 {
