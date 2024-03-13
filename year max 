@@ -1,1 +1,3 @@
 library(dpylr)
+group_by(company)
+date=as.POSIXct(D$Date, format="%m/%d/%y %H:%M")
