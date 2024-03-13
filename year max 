@@ -1,8 +1,11 @@
 library(dpylr)
 group_by(company)
-date=as.POSIXct(data$date, format="%m/%d/%y %H:%M")
-mutate(maxprice=close)
-for I in c(1:length(date$close))
+data$date=as.POSIXct(data$date, format="%Y%m%d")
+mutate(maxprice=close)#在旁邊建立等長向量
+findmax<-function(a)
 {
-
+}
+for i in c(1:length(date$close))
+{
+max(data$high[i,data$high
 }
