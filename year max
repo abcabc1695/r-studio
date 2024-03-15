@@ -6,6 +6,7 @@ findmax<-function(a)#a是位置
 {
 data%>%
 m=max(high==(date>(date[a]-365)&&date<date[a]))#如果date可以直接做減法就可以直接使用
+data$Date=strptime(data$Date, format = "%Y%m%d")
 return(m)
 }
 for i in c(1:length(date$close))
