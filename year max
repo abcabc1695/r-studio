@@ -1,15 +1,21 @@
-library(dpylr)
-group_by(company)
-data$date=as.POSIXct(data$date, format="%Y%m%d")
-mutate(maxprice=close)#在旁邊建立等長向量
-findmax<-function(a)#a是位置
+library(dplyr)
+library(lubridate)
+data=read.csv("D:/R/Factor Investment/maxprice/new2.csv")
+#as.data.frame(data)
+#data=group_by(data,Company)
+data=arrange(data,Company)
+data$Date=ymd(data$Date)
+data=mutate(data,maxprice=0)
+data=mutate(data,ayearindex=c(data$Date>=(data$Date[1]+365)))
+data=mutate(data,maxprice=data$high*(data$Date>(data$Date[3]-365)&data$Date<=data$Date[3]))
+data$maxprice[data$Date==data$Date[3]]=slice_max(data,maxprice,n=1)
+data=group_by(data,data$Company)
+
+slice_max(data,maxprice,n=1)
+
+data=ungroup(data)
+for(i in c(1:length(data$high)))
 {
-data%>%
-m=max(high==(date>(date[a]-365)&&date<date[a]))#如果date可以直接做減法就可以直接使用
-data$Date=strptime(data$Date, format = "%Y%m%d")
-return(m)
+  data$maxprice=data$high*(data$Date>(data$Date[i]-365)&data$Date<data$Date[i])
 }
-for i in c(1:length(date$close))
-{
-max(data$high[i,data$high
-}
+data$maxprice=data$high*(data$Date>(data$Date[3]-365)&data$Date<data$Date[3])
