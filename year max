@@ -72,3 +72,5 @@ for(idxx in c(1:860223))
   }
   cat(idxx,"\n")
 }
+t=rbind(t,c(1:7))
+apply(t,,SD())
