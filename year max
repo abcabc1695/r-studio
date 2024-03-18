@@ -33,27 +33,27 @@ for(i in c(1:1807))#1807
 }
 for(idxx in c(1:860223))
 {
-  if(data$ayearindex[index[idxx]+1]==T)
+  if(data$ayearindex[data$index[idxx]+1]==T)
   {
-    data$t1[i]=(data$close[index[idxx]+1]-data$close[index[idxx]])/data$close[index[idxx]]
-    if(data$ayearindex[index[idxx]+2]==T)
+    data$t1[i]=(data$close[data$index[idxx]+1]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+    if(data$ayearindex[data$index[idxx]+2]==T)
     {
-      data$t2[i]=(data$close[index[idxx]+2]-data$close[index[idxx]])/data$close[index[idxx]]
-      if(data$ayearindex[index[idxx]+3]==T)
+      data$t2[i]=(data$close[data$index[idxx]+2]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+      if(data$ayearindex[data$index[idxx]+3]==T)
       {
-        data$t3[i]=(data$close[index[idxx]+3]-data$close[index[idxx]])/data$close[index[idxx]]
-        if(data$ayearindex[index[idxx]+5]==T)
+        data$t3[i]=(data$close[data$index[idxx]+3]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+        if(data$ayearindex[data$index[idxx]+5]==T)
         {
-          data$t5[i]=(data$close[index[idxx]+5]-data$close[index[idxx]])/data$close[index[idxx]]
-          if(data$ayearindex[index[idxx]+15]==T)
+          data$t5[i]=(data$close[data$index[idxx]+5]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+          if(data$ayearindex[data$index[idxx]+15]==T)
           {
-            data$t15[i]=(data$close[index[idxx]+15]-data$close[index[idxx]])/data$close[index[idxx]]
-            if(data$ayearindex[index[idxx]+20]==T)
+            data$t15[i]=(data$close[data$index[idxx]+15]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+            if(data$ayearindex[data$index[idxx]+20]==T)
             {
-              data$t20[i]=(data$close[index[idxx]+20]-data$close[index[idxx]])/data$close[index[idxx]]
-              if(data$ayearindex[index[idxx]+25]==T)
+              data$t20[i]=(data$close[data$index[idxx]+20]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+              if(data$ayearindex[data$index[idxx]+25]==T)
               {
-                data$t25[i]=(data$close[index[idxx]+25]-data$close[index[idxx]])/data$close[index[idxx]]
+                data$t25[i]=(data$close[data$index[idxx]+25]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
               }
             }
           }
