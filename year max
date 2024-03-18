@@ -1,21 +1,65 @@
 library(dplyr)
 library(lubridate)
 data=read.csv("D:/R/Factor Investment/maxprice/new2.csv")
-#as.data.frame(data)
-#data=group_by(data,Company)
 data=arrange(data,Company)
 data$Date=ymd(data$Date)
 data=mutate(data,maxprice=0)
 data=mutate(data,ayearindex=c(data$Date>=(data$Date[1]+365)))
-data=mutate(data,maxprice=data$high*(data$Date>(data$Date[3]-365)&data$Date<=data$Date[3]))
-data$maxprice[data$Date==data$Date[3]]=slice_max(data,maxprice,n=1)
-data=group_by(data,data$Company)
-
-slice_max(data,maxprice,n=1)
-
-data=ungroup(data)
-for(i in c(1:length(data$high)))
+data=mutate(data,index=0)
+d1=0
+idx=1
+for(i in c(1:1807))#1807
 {
-  data$maxprice=data$high*(data$Date>(data$Date[i]-365)&data$Date<data$Date[i])
+  timestart=Sys.time()
+  presentcom=data$Company[d1+1]
+  d=1
+  while(data$Company[d1+d]==presentcom)
+  {
+    if(data$ayearindex[d+d1]==T)
+    {
+      data$maxprice[d+d1]=max(data$high[(data$Company==presentcom)&(data$Date>data$Date[d+d1]-dyears(1))&(data$Date<data$Date[d+d1])])
+      if(data$high[d+d1]>data$maxprice[d+d1])
+      {
+        data$index[idx]=d+d1
+        idx=idx+1
+      }
+    }
+    d=d+1
+  }
+  d1=d1+d-1
+  cat(i,"/1807\n")
+  timend=Sys.time()
+  cat(timend-timestart,"\n")
 }
-data$maxprice=data$high*(data$Date>(data$Date[3]-365)&data$Date<data$Date[3])
+for(idxx in c(1:860223))
+{
+  if(data$ayearindex[index[idxx]+1]==T)
+  {
+    data$t1[i]=(data$close[index[idxx]+1]-data$close[index[idxx]])/data$close[index[idxx]]
+    if(data$ayearindex[index[idxx]+2]==T)
+    {
+      data$t2[i]=(data$close[index[idxx]+2]-data$close[index[idxx]])/data$close[index[idxx]]
+      if(data$ayearindex[index[idxx]+3]==T)
+      {
+        data$t3[i]=(data$close[index[idxx]+3]-data$close[index[idxx]])/data$close[index[idxx]]
+        if(data$ayearindex[index[idxx]+5]==T)
+        {
+          data$t5[i]=(data$close[index[idxx]+5]-data$close[index[idxx]])/data$close[index[idxx]]
+          if(data$ayearindex[index[idxx]+15]==T)
+          {
+            data$t15[i]=(data$close[index[idxx]+15]-data$close[index[idxx]])/data$close[index[idxx]]
+            if(data$ayearindex[index[idxx]+20]==T)
+            {
+              data$t20[i]=(data$close[index[idxx]+20]-data$close[index[idxx]])/data$close[index[idxx]]
+              if(data$ayearindex[index[idxx]+25]==T)
+              {
+                data$t25[i]=(data$close[index[idxx]+25]-data$close[index[idxx]])/data$close[index[idxx]]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  cat(i,"\n")
+}
