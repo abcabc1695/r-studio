@@ -1,0 +1,115 @@
+library(dplyr)
+library(lubridate)
+data=read.csv("D:/R/Factor Investment/maxprice/new2.csv")
+data=arrange(data,Company)
+data=mutate(data,maxprice=0,maxdate=0,index=0)
+data$Date=ymd(data$Date)
+data$maxdate=ymd(data$maxdate)
+data=mutate(data,ayearindex=c(data$Date>=(data$Date[1]+365)))
+d1=0
+idx=1
+for(i in c(1:1807))#1807
+{
+  timestart=Sys.time()
+  presentcom=data$Company[d1+1]
+  d=1
+  while(data$Company[d1+d]==presentcom)
+  {
+    if(data$ayearindex[d1+d]==T)
+    {
+      if(data$ayearindex[d1+d-1]==T)
+      {
+        if(data$high[d1+d]>data$maxprice[d1+d-1])
+        {
+          if(data$Date[d1+d]>(data$maxdate[d1+d-1]+dyears(1)))
+          {
+            m=data$high[(data$Company==presentcom)&(data$Date>data$Date[d1+d]-dyears(1))&(data$Date<data$Date[d1+d])]
+            l=length(m)
+            data$maxdate[d1+d]=data$Date[d1+d-l+which.max(m)-1]
+            data$maxprice[d1+d]=max(m)
+          }
+          else
+          {
+            data$maxdate[d1+d]=data$Date[d1+d]
+            data$maxprice[d1+d]=data$high[d1+d]
+            data$index[idx]=d1+d
+            idx=idx+1
+          }
+        }
+        else
+        {
+          if(data$Date[d1+d]>(data$maxdate[d1+d-1]+dyears(1)))
+          {
+            m=data$high[(data$Company==presentcom)&(data$Date>data$Date[d1+d]-dyears(1))&(data$Date<data$Date[d1+d])]
+            l=length(m)
+            data$maxdate[d1+d]=data$Date[d1+d-l+which.max(m)-1]
+            data$maxprice[d1+d]=max(m)
+          }
+          else
+          {
+            data$maxdate[d1+d]=data$maxdate[d1+d-1]
+            data$maxprice[d1+d]=data$maxprice[d1+d-1] 
+          }
+        }
+      }
+      else
+      {
+        m=data$high[(data$Company==presentcom)&(data$Date>data$Date[d1+d]-dyears(1))&(data$Date<data$Date[d1+d])]
+        l=length(m)
+        data$maxdate[d1+d]=data$Date[d1+d-l+which.max(m)-1]
+        data$maxprice[d1+d]=max(m)
+      }
+    }
+    d=d+1
+  }
+  d1=d1+d-1
+  cat(i,"/1807\n")
+  timend=Sys.time()
+  cat(timend-timestart,"\n")
+}
+t=matrix(0,nrow=3,ncol=7)
+dimnames(t)=list(c("total","n","avgreturn"),c("t1","t2","t3","t5","t15","t20","t25"))
+for(idxx in c(1:860223))#資料只到16717，所以可以只用16717
+{
+  if(data$ayearindex[data$index[idxx]+1]==T)
+  {
+    t[1,1]=t[1,1]+(data$close[data$index[idxx]+1]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+    t[2,1]=t[2,1]+1
+    if(data$ayearindex[data$index[idxx]+2]==T)
+    {
+      t[1,2]=t[1,2]+(data$close[data$index[idxx]+2]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+      t[2,2]=t[2,2]+1
+      if(data$ayearindex[data$index[idxx]+3]==T)
+      {
+        t[1,3]=t[1,3]+(data$close[data$index[idxx]+3]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+        t[2,3]=t[2,3]+1
+        if(data$ayearindex[data$index[idxx]+5]==T)
+        {
+          t[1,4]=t[1,4]+(data$close[data$index[idxx]+5]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+          t[2,4]=t[2,4]+1
+          if(data$ayearindex[data$index[idxx]+15]==T)
+          {
+            t[1,5]=t[1,5]+(data$close[data$index[idxx]+15]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+            t[2,5]=t[2,5]+1
+            if(data$ayearindex[data$index[idxx]+20]==T)
+            {
+              t[1,6]=t[1,6]+(data$close[data$index[idxx]+20]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+              t[2,6]=t[2,6]+1
+              if(data$ayearindex[data$index[idxx]+25]==T)
+              {
+                t[1,7]=t[1,7]+(data$close[data$index[idxx]+25]-data$close[data$index[idxx]])/data$close[data$index[idxx]]
+                t[2,7]=t[2,7]+1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  cat(idxx,"\n")
+}
+for(j in c(1:7))
+{
+  t[3,j]=t[1,j]/t[2,j]
+}
+write.csv(data,"data.csv")
