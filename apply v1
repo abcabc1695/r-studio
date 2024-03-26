@@ -1,16 +1,27 @@
-day <- function(da) {
-  # # Calculate year difference for all rows
-  # year_diff <- data$Date - data$Date[1] >= 365
-  # # Find max high price for previous year within each company (using dplyr)
-  # data$High1y <- ifelse(year_diff, 
-  #                       dplyr::group_by(data, Company)[year_diff - 1L, max(High)]$High,
-  #                       0)
-  
-  print(data$Company[1])
-  return(da)
+library(dplyr)
+data=data1
+data=arrange(data,Company)
+data=data[c(1:10000),]
+data$Date=ymd(data$Date)
+data=mutate(data,High1y=0,Index=0,Id=c(1:nrow(data)))
+day <- function(da)
+{
+  # Company=da[1],Date=da[2],High=da[5],High1y=da[7],Index=da[8],Id=da[9]
+  if(da[2]>=(data$Date[1]+365))
+  {
+    da[7]=max(data$High[(data$Company==da[1])&(data$Date>da[2]-dyears(1))&(data$Date<da[2])])
+    if(da[7]>da[5])
+    {
+      da[8]=da[9]
+      return(da)
+    }
+    else
+      return(da) 
+  }
+  else
+   return(da)
 }
 a <- Sys.time()
-
 data2=apply(data,MARGIN = 1,day)
 cl <- makeCluster(4)
 data <- parApply(cl, 1:nrow(data), FUN=function(i) day(data[i,]), data = data)
