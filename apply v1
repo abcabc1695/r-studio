@@ -1,0 +1,18 @@
+day <- function(da) {
+  # # Calculate year difference for all rows
+  # year_diff <- data$Date - data$Date[1] >= 365
+  # # Find max high price for previous year within each company (using dplyr)
+  # data$High1y <- ifelse(year_diff, 
+  #                       dplyr::group_by(data, Company)[year_diff - 1L, max(High)]$High,
+  #                       0)
+  
+  print(data$Company[1])
+  return(da)
+}
+a <- Sys.time()
+
+data2=apply(data,MARGIN = 1,day)
+cl <- makeCluster(4)
+data <- parApply(cl, 1:nrow(data), FUN=function(i) day(data[i,]), data = data)
+Sys.time() - a
+data2=tapply(data,FUN=day)
