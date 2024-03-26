@@ -1,29 +1,63 @@
 library(dplyr)
+library(lubridate)
+library(parallel)
+data1 <- read.csv("D:/R/Factor Investment/maxprice/new4.csv")
 data=data1
 data=arrange(data,Company)
-data=data[c(1:10000),]
+# data=data[c(1:75000),]
 data$Date=ymd(data$Date)
 data=mutate(data,High1y=0,Index=0,Id=c(1:nrow(data)))
-day <- function(da)
+#parapply專用函數
+day <- function(da,data)
 {
   # Company=da[1],Date=da[2],High=da[5],High1y=da[7],Index=da[8],Id=da[9]
+  t=ymd(da[2])
   if(da[2]>=(data$Date[1]+365))
   {
-    da[7]=max(data$High[(data$Company==da[1])&(data$Date>da[2]-dyears(1))&(data$Date<da[2])])
-    if(da[7]>da[5])
+    da[7]=max(data$High[(data$Company==da[1])&(data$Date>t-365)&(data$Date<da[2])])
+    if(da[7]<da[5])
     {
       da[8]=da[9]
       return(da)
     }
     else
-      return(da) 
+      return(da)
   }
   else
    return(da)
 }
-a <- Sys.time()
-data2=apply(data,MARGIN = 1,day)
-cl <- makeCluster(4)
-data <- parApply(cl, 1:nrow(data), FUN=function(i) day(data[i,]), data = data)
-Sys.time() - a
-data2=tapply(data,FUN=day)
+#apply專用函數
+  # ay <- function(da)
+  # {
+  #   # Company=da[1],Date=da[2],High=da[5],High1y=da[7],Index=da[8],Id=da[9]
+  #   t=ymd(da[2])
+  #   if(da[2]>=(data$Date[1]+365))
+  #   {
+  #     da[7]=max(data$High[(data$Company==da[1])&(data$Date>t-365)&(data$Date<da[2])])
+  #     if(da[7]<da[5])
+  #     {
+  #       da[8]=da[9]
+  #       return(da)
+  #     }
+  #     else
+  #       return(da)
+  #   }
+  #   else
+  #     return(da)
+  # }
+#apply 開始使用
+  # a=Sys.time()
+  # data2=apply(data,MARGIN = 1,ay)
+  # Sys.time()-a
+  # data2=t(data2)
+#apply 結束使用
+#parapply 開始使用
+a=Sys.time()
+cores <- detectCores()-1
+cl <- makeCluster(cores)
+clusterEvalQ(cl, library(lubridate))
+data2=parApply(cl, as.data.frame(t(data)), MARGIN = 2, FUN = day, data = data)
+stopCluster(cl)
+Sys.time()-a
+data2=as.data.frame(t(data2))
+#parapply 結束使用
