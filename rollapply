@@ -1,0 +1,86 @@
+library(dplyr)
+library(zoo)
+library(data.table)
+data1 <- read.csv("E:/R/Lai/factormax/new4.csv")
+data=data1
+data=arrange(data,Company)
+# data=mutate(data,MaxHigh12=0)
+# data$MaxHigh12=rollapply(data$High, width = 240, align = "right", FUN = max, fill = NA,by=Company)
+# idx <- unique(data$Date)
+# merged_data <- merge(data, data.table(Date = idx), by = "Date")
+# data[, MaxHigh12 := rollapply(High, width = 240, align = "right", FUN = max, fill = NA),by=Company]
+setDT(data)
+data[,lag:=shift(.SD$High,type="lag"),by=data$Company]
+data[, MaxHigh12 := .SD[, rollapply(lag, width = 240, align = "right", FUN = max, fill = NA)], by = Company]
+# data$index=!complete.cases(data$Limit)
+data$Limit[is.na(data$Limit)]=0
+data$index=(data$High>data$MaxHigh12)&(!data$Limit=="+")
+data$index[is.na(data$index)]=0
+data$index[25:50]=1
+setDT(data)
+data[,lag2:=shift(.SD$index,type="lag"),by=data$Company]
+data[, idx := .SD[, rollapply(lag2, width = 20, align = "right", FUN = max, fill = NA)], by = Company]
+data$index=data$index&(data$idx==F)
+#
+data$index[25]=1
+data$index[26]=1
+# 
+# for(i in c(1:nrow(data)))
+# {
+#   if(data$index[i]==1)
+#   {
+#     if(any(data$index[c(i-20:i)]))
+#       data$index[i]==0
+#   }
+# }
+#
+# data$num=c(1:nrow(data))
+# fn=function(a)
+# {
+#   if(a[9]==1)
+#   {
+#     if(any(a[9][c(a$num:a$num-20)]))
+#       a$index==0
+#   }
+# }
+# data=apply(data,1,FUN=fn)
+#
+t=matrix(0,nrow=4,ncol=7)
+dimnames(t)=list(c("total","n","ari-avgreturn","geo-avgreturn"),c("t1","t2","t3","t5","t15","t20","t25"))
+data[,t1:=shift(.SD$Close,type="lead"),by=data$Company]
+data[,t2:=shift(.SD$Close,type="lead",n=2),by=data$Company]
+data[,t3:=shift(.SD$Close,type="lead",n=3),by=data$Company]
+data[,t5:=shift(.SD$Close,type="lead",n=5),by=data$Company]
+data[,t15:=shift(.SD$Close,type="lead",n=15),by=data$Company]
+data[,t20:=shift(.SD$Close,type="lead",n=20),by=data$Company]
+data[,t25:=shift(.SD$Close,type="lead",n=25),by=data$Company]
+
+t[1,1]=sum((data$t1[!is.na(data$t1)&data$index==1]-data$Close[!is.na(data$t1)&data$index==1])/data$Close[!is.na(data$t1)&data$index==1])
+t[2,1]=length(data$t1[!is.na(data$t1)&data$index==1])
+t[3,1]=t[1,1]/t[2,1]
+t[1,2]=sum((data$t2[!is.na(data$t2)&data$index==1]-data$Close[!is.na(data$t2)&data$index==1])/data$Close[!is.na(data$t2)&data$index==1])
+t[2,2]=length(data$t2[!is.na(data$t2)&data$index==1])
+t[3,2]=t[1,2]/t[2,2]
+t[1,3]=sum((data$t3[!is.na(data$t3)&data$index==1]-data$Close[!is.na(data$t3)&data$index==1])/data$Close[!is.na(data$t3)&data$index==1])
+t[2,3]=length(data$t3[!is.na(data$t3)&data$index==1])
+t[3,3]=t[1,3]/t[2,3]
+t[1,4]=sum((data$t5[!is.na(data$t5)&data$index==1]-data$Close[!is.na(data$t5)&data$index==1])/data$Close[!is.na(data$t5)&data$index==1])
+t[2,4]=length(data$t5[!is.na(data$t5)&data$index==1])
+t[3,4]=t[1,4]/t[2,4]
+t[1,5]=sum((data$t15[!is.na(data$t15)&data$index==1]-data$Close[!is.na(data$t15)&data$index==1])/data$Close[!is.na(data$t15)&data$index==1])
+t[2,5]=length(data$t15[!is.na(data$t15)&data$index==1])
+t[3,5]=t[1,5]/t[2,5]
+t[1,6]=sum((data$t20[!is.na(data$t20)&data$index==1]-data$Close[!is.na(data$t20)&data$index==1])/data$Close[!is.na(data$t20)&data$index==1])
+t[2,6]=length(data$t20[!is.na(data$t20)&data$index==1])
+t[3,6]=t[1,6]/t[2,6]
+t[1,7]=sum((data$t25[!is.na(data$t25)&data$index==1]-data$Close[!is.na(data$t25)&data$index==1])/data$Close[!is.na(data$t25)&data$index==1])
+t[2,7]=length(data$t25[!is.na(data$t25)&data$index==1])
+t[3,7]=t[1,7]/t[2,7]
+
+t[4,1]=t[1,1]^(1/t[2,1])
+t[4,2]=t[1,2]^(1/t[2,2])
+t[4,3]=t[1,3]^(1/t[2,3])
+t[4,4]=t[1,4]^(1/t[2,4])
+t[4,5]=t[1,5]^(1/t[2,5])
+t[4,6]=t[1,6]^(1/t[2,6])
+t[4,7]=t[1,7]^(1/t[2,7])
